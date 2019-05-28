@@ -45,4 +45,4 @@ for line in $(cat < "$ENV_FILE" | egrep -v "^(#|\$)"); do
   IFS=$'\n'
 done
 
-ls $env_dir
+cat $env_dir/SEE_BASEURL
