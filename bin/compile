@@ -39,3 +39,5 @@ echo "---- Make environment available to succeeding build packs"
 touch $HOME/profile
 
 egrep -v "^(#|\$)" $ENV_FILE | sed 's/ = /=/g' | sed 's/^/export /g' >> $HOME/profile
+
+cat $HOME/profile
