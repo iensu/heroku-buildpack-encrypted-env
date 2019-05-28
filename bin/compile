@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir> <env-dir>
+
+build_dir=$1
+env_dir=$3
+
+cd $build_dir
+
+ENV_FILE=$(cat $env_dir/ENV_FILE)
+
+echo "---- Using secrets from $ENV_FILE"
+
+gpg-agent --daemon
+
+gpg --import $env_dir/PGP_PRIVATE_KEY_HEROKU
+
+gpg --output $ENV_FILE --decrypt $ENV_FILE.gpg
+
+if [ -f $ENV_FILE ]; then
+  echo "---- Successfully decrypted $ENV_FILE.gpg"
+else
+  echo "---- Decryption failed!"
+fi
+
+echo KILLAGENT | gpg-connect-agent
+
+echo "---- Decryption done!"
+
+echo "---- Populate environment"
+
+export $(egrep -v "^(#|\$)" $ENV_FILE | sed 's/ = /=/g' | xargs)
+
+echo "---- Make environment available to succeeding build packs"
+
+output_path="$build_dir/.profile.d/environment.sh"
+
+export | grep -E -e ' (PATH|LD_PRELOAD|LD_LIBRARY_PATH|LIBRARY_PATH|INCLUDE_PATH|CPATH|CPPPATH|PKG_CONFIG_PATH)=' >> $output_path
