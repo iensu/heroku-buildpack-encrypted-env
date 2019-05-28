@@ -32,6 +32,10 @@ export $(egrep -v "^(#|\$)" $ENV_FILE | sed 's/ = /=/g' | xargs)
 
 echo "---- Make environment available to succeeding build packs"
 
-output_path="$build_dir/.profile.d/environment.sh"
+# output_path="$build_dir/.profile.d/environment.sh"
 
-export | grep -E -e ' (PATH|LD_PRELOAD|LD_LIBRARY_PATH|LIBRARY_PATH|INCLUDE_PATH|CPATH|CPPPATH|PKG_CONFIG_PATH)=' >> $output_path
+# export | grep -E -e ' (PATH|LD_PRELOAD|LD_LIBRARY_PATH|LIBRARY_PATH|INCLUDE_PATH|CPATH|CPPPATH|PKG_CONFIG_PATH)=' >> $output_path
+
+touch $HOME/profile
+
+egrep -v "^(#|\$)" $ENV_FILE | sed 's/ = /=/g' | sed 's/^/export /g' >> $HOME/profile
