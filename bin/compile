@@ -25,24 +25,3 @@ fi
 echo KILLAGENT | gpg-connect-agent
 
 echo "---- Decryption done!"
-
-echo "---- Populate environment"
-
-export $(egrep -v "^(#|\$)" $ENV_FILE | sed 's/ = /=/g' | xargs)
-
-echo "---- Make environment available to succeeding build packs"
-
-touch $HOME/profile
-
-egrep -v "^(#|\$)" $ENV_FILE | sed 's/ = /=/g' | sed 's/^/export /g' >> $HOME/profile
-
-echo "---- Creating env variables"
-
-IFS=$'\n' # make newlines the only separator
-for line in $(cat < "$ENV_FILE" | egrep -v "^(#|\$)"); do
-  IFS=' = ' read -r -a array <<< "$line"
-  echo "${array[1]}" >> "$env_dir/${array[0]}"
-  IFS=$'\n'
-done
-
-cat $env_dir/SEE_BASEURL
